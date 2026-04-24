@@ -1,6 +1,6 @@
 # T1T2.ai — Your AI Examiner for IELTS Writing Tasks
 
-T1T2.ai (formerly BandBoost) is an advanced, AI-powered platform designed to provide instant, highly accurate band scores and detailed, professional feedback for IELTS Writing Task 1 and Task 2. 
+T1T2.ai is an advanced, AI-powered platform designed to provide instant, highly accurate band scores and detailed, professional feedback for IELTS Writing Task 1 and Task 2. 
 
 Powered by **Gemini 2.0 Flash** and **Gemini 3.0 Flash Preview**, T1T2.ai parses essays and charts (multimodal) to simulate an official IELTS examiner, providing scores strictly adhering to the official IELTS rubrics: Task Achievement/Response, Coherence & Cohesion, Lexical Resource, and Grammatical Range & Accuracy.
 
