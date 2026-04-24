@@ -1,115 +1,139 @@
-# 📝 IELTS Writing Task 1 Evaluator
+# T1T2.ai — Your AI Examiner for IELTS Writing Tasks
 
-A Streamlit app that evaluates IELTS Academic Writing Task 1 essays using Google's Gemini model. Upload a chart/graph or choose a sample, write your essay, and get detailed band scores with actionable feedback based on official IELTS criteria.
+T1T2.ai (formerly BandBoost) is an advanced, AI-powered platform designed to provide instant, highly accurate band scores and detailed, professional feedback for IELTS Writing Task 1 and Task 2. 
 
----
-
-## 🔍 Features
-
-- 📊 Upload your own IELTS Task 1 image (chart, graph, table)
-- ✍️ Paste your written essay in response to the visual
-- 🤖 Evaluates using **Google Gemini 1.5 Flash**
-- ✅ Scores based on IELTS criteria:
-  - Task Achievement
-  - Coherence and Cohesion
-  - Lexical Resource
-  - Grammatical Range and Accuracy
-- 📈 Visual band score bar chart
-- 💬 Criterion-specific feedback
+Powered by **Gemini 2.0 Flash** and **Gemini 3.0 Flash Preview**, T1T2.ai parses essays and charts (multimodal) to simulate an official IELTS examiner, providing scores strictly adhering to the official IELTS rubrics: Task Achievement/Response, Coherence & Cohesion, Lexical Resource, and Grammatical Range & Accuracy.
 
 ---
 
-## 🚀 Live App
+## Features
 
-👉 [Launch the app on Streamlit](https://ielts-task-1-evaluator.streamlit.app/)
-
----
-
-## 🧠 How It Works
-
-1. Upload or select a visual prompt image.
-2. Paste your essay into the editor.
-3. The app sends the image and essay to Gemini.
-4. Gemini returns:
-   - Band scores (0–9)
-   - Feedback per criterion
-5. Results are displayed as a chart and text.
+- **Multimodal Task 1 Evaluation**: Upload pie charts, bar graphs, process diagrams, or maps. The AI "sees" the image and evaluates your description just like a real examiner.
+- **Strict Task 2 Grading**: Accurate band score approximation with 0.5 increment precision.
+- **Detailed Feedback Pipeline**: Actionable feedback generated for each of the 4 IELTS criteria, alongside top 4 improvements.
+- **Premium Dark UI**: Distraction-free, responsive, and beautiful Next.js frontend.
+- **PDF Export**: Generate professional evaluation reports instantly.
+- **History & Quotas**: Built-in daily rate limiting and persistent history of evaluations.
 
 ---
 
-## 📦 Installation
+## Tech Stack
+
+### Frontend
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Authentication**: Supabase JWT Auth
+
+### Backend
+- **Framework**: Django 5 / Django REST Framework
+- **Database**: PostgreSQL (via Supabase / Local Docker)
+- **Message Broker / Cache**: Redis
+- **Task Queue**: Celery (Background evaluations)
+- **AI Integration**: Google Gemini API (`gemini-2.0-flash` and `gemini-3-flash-preview`)
+- **PDF Generation**: xhtml2pdf
+
+---
+
+## Prerequisites
+
+- Node.js 18+
+- Python 3.10+
+- Docker & Docker Compose (for PostgreSQL and Redis)
+- Supabase Project (for Authentication)
+- Google Gemini API Key
+
+---
+
+## Setup & Installation
 
 ### 1. Clone the repository
-
 ```bash
 git clone https://github.com/gajula21/ielts-task-1-evaluator.git
 cd ielts-task-1-evaluator
 ```
 
-### 2. Add your Google Gemini API key
-
-Create a `.env` file in the root directory:
-
-```env
-GOOGLE_API_KEY=your_gemini_api_key_here
+### 2. Infrastructure (Database & Redis)
+Start the local PostgreSQL and Redis containers using Docker Compose:
+```bash
+docker-compose up -d
 ```
 
-### 3. Install dependencies
-
+### 3. Backend Setup
+Navigate to the `backend` directory, set up your virtual environment, and install dependencies:
 ```bash
+cd backend
+python -m venv venv
+# On Windows:
+.\venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
 pip install -r requirements.txt
 ```
 
-### 4. Run the app
+Create a `.env` file in the `backend` directory:
+```env
+SECRET_KEY=your-secret-key-here-change-in-production
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+DATABASE_URL=postgres://bandboost_user:bandboost_password@localhost:5432/bandboost_db
+REDIS_URL=redis://localhost:6379/0
+GEMINI_API_KEYS=your-gemini-key-1,your-gemini-key-2
+SUPABASE_URL=https://your-supabase-url.supabase.co
+SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_JWT_SECRET=your-supabase-jwt-secret
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+```
 
+Run migrations and start the Django server:
 ```bash
-streamlit run app.py
+python manage.py migrate
+python manage.py runserver
 ```
 
----
+Start the Celery worker (in a new terminal, with venv activated):
+```bash
+# On Windows (requires --pool=solo):
+celery -A myproject worker --loglevel=info --pool=solo
 
-## 🗂️ Project Structure
-
-```
-ielts-task-1-evaluator/
-├── app.py                # Main Streamlit app
-├── requirements.txt      # Python dependencies
-├── .env                  # API key (not committed)
-└── README.md             # Project overview
+# On Linux/macOS:
+celery -A myproject worker --loglevel=info
 ```
 
----
+### 4. Frontend Setup
+Navigate to the `frontend` directory and install dependencies:
+```bash
+cd ../frontend
+npm install
+```
 
-## 📄 Sample Image Sources
+Create a `.env.local` file in the `frontend` directory:
+```env
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api
+NEXT_PUBLIC_SUPABASE_URL=https://your-supabase-url.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
 
-Example images taken from public IELTS resources:
+Start the Next.js development server:
+```bash
+npm run dev
+```
 
-- [IELTS Buddy](https://www.ieltsbuddy.com/)
-- [British Council](https://takeielts.britishcouncil.org/)
-- [HowToDoIELTS](https://howtodoielts.com/)
-
----
-
-## 📌 Notes
-
-- Minimum length: 150 words
-- Use an objective, formal tone
-- Include:
-  - Introduction
-  - Overview
-  - Key details (with data)
-
----
-
-## 👤 Author
-
-**Vivek Gajula**  
-🔗 [github.com/gajula21](https://github.com/gajula21)
+Visit `http://localhost:3000` to start using T1T2.ai.
 
 ---
 
-## 📜 License
+## Production Deployment
 
-This project is licensed under the [MIT License](LICENSE).
+This application is designed to be fully containerized. 
+1. Use `backend/Dockerfile` to build the Django/Celery image.
+2. Deploy the Next.js frontend to Vercel or a standard Node environment.
+3. Ensure you provide a managed PostgreSQL database and Redis instance (e.g., DigitalOcean, AWS ElastiCache).
+4. Set `DEBUG=False` in production and configure your `ALLOWED_HOSTS` and `CORS_ALLOWED_ORIGINS`.
 
 ---
+
+## License
+
+MIT License. See `LICENSE` for details.
